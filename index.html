@@ -64,11 +64,6 @@
     <div style="background:oklch(0.995 0.004 75);border-radius:24px;box-shadow:0 20px 60px -34px oklch(0.5 0.05 50 / 0.4);overflow:hidden;border:1px solid oklch(0.93 0.01 65);display:flex;align-items:stretch;">
       <!-- LEFT input -->
       <div style="width:352px;flex:none;padding:24px;border-right:1px solid oklch(0.94 0.01 65);background:oklch(0.985 0.006 72);">
-        <p style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:0 0 12px;">이번 달 예산</p>
-        <div style="display:flex;gap:8px;margin-bottom:24px;">
-          <div style="flex:1;min-width:0;display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 12px;"><span style="font-family:'Poppins';color:oklch(0.6 0.02 60);">$</span><input value="{{ budgetDraft }}" onInput="{{ onBudget }}" inputmode="decimal" placeholder="예산 금액" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:11px 8px;font-family:'Poppins';font-size:15px;"></div>
-          <button onClick="{{ saveBudget }}" style="border:none;border-radius:12px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:0 16px;font-size:13px;">설정</button>
-        </div>
         <p style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:0 0 12px;">지출 입력</p>
         <label style="font-size:11px;color:oklch(0.56 0.02 60);display:block;margin-bottom:5px;">금액</label>
         <div style="display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 14px;margin-bottom:12px;"><span style="font-family:'Poppins';font-size:20px;color:oklch(0.55 0.02 60);">$</span><input value="{{ draftAmount }}" onInput="{{ onAmount }}" onKeyDown="{{ onAmountKey }}" inputmode="decimal" placeholder="0" style="flex:1;border:none;outline:none;background:transparent;padding:12px 8px;font-family:'Poppins';font-size:22px;font-weight:600;"></div>
@@ -127,7 +122,6 @@
         <div style="display:flex;gap:8px;margin-bottom:12px;"><input type="date" value="{{ draftDate }}" onInput="{{ onDate }}" style="flex:none;width:140px;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 10px;font-size:12px;outline:none;"><input value="{{ draftMemo }}" onInput="{{ onMemo }}" placeholder="메모" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 12px;font-size:13px;outline:none;"></div>
         <button onClick="{{ addEntry }}" style="width:100%;border:none;border-radius:14px;background:oklch(0.80 0.11 40);color:oklch(0.28 0.05 40);font-weight:600;padding:14px;font-size:15px;">+ 추가</button>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;"><span style="font-size:12px;color:oklch(0.55 0.02 60);flex:none;">예산 설정</span><div style="flex:1;min-width:0;display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 10px;"><span style="font-family:'Poppins';color:oklch(0.6 0.02 60);">$</span><input value="{{ budgetDraft }}" onInput="{{ onBudget }}" inputmode="decimal" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:9px 6px;font-family:'Poppins';font-size:14px;"></div><button onClick="{{ saveBudget }}" style="border:none;border-radius:12px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:9px 14px;font-size:13px;flex:none;">저장</button></div>
       <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
       <div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:8px;">일자별 추이</div><div style="display:flex;align-items:flex-end;gap:2px;height:60px;background:oklch(0.985 0.006 72);border-radius:12px;padding:8px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"></div></div></sc-for></div></div>
       </sc-if>
@@ -157,16 +151,33 @@
         </div>
       </div>
 
-      <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:16px 0 10px;">항목별 예산 <span style="font-weight:400;color:oklch(0.6 0.02 60);font-size:12px;">— 항목마다 예산을 정하면 남은 금액이 보여요</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:16px 0 10px;">
+        <span style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);">항목별 예산 <span style="font-weight:400;color:oklch(0.6 0.02 60);font-size:12px;">— 항목마다 예산을 정하면 남은 금액이 보여요</span></span>
+        <div style="display:flex;gap:5px;align-items:center;flex:none;"><input value="{{ newCat }}" onInput="{{ onNewCat }}" onKeyDown="{{ onNewCatKey }}" placeholder="새 항목" style="width:104px;border:1px solid oklch(0.90 0.015 65);border-radius:10px;background:#fff;padding:7px 10px;font-size:12px;outline:none;"><button onClick="{{ addCat }}" style="border:none;border-radius:10px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:7px 12px;font-size:12px;">+ 항목</button></div>
+      </div>
       <div style="{{ dashCatGridStyle }}">
         <sc-for list="{{ cats }}" as="c" hint-placeholder-count="6">
           <div style="border:1px solid oklch(0.93 0.012 65);border-radius:16px;padding:14px;">
-            <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:9px;height:9px;border-radius:50%;background:{{ c.color }};"></span><span style="font-size:13px;font-weight:600;">{{ c.name }}</span></div>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:9px;height:9px;border-radius:50%;background:{{ c.color }};flex:none;"></span><span style="font-size:13px;font-weight:600;flex:1;min-width:0;">{{ c.name }}</span><button onClick="{{ c.onRemove }}" title="항목 삭제" style="border:none;background:transparent;color:oklch(0.72 0.05 30);font-size:16px;line-height:1;flex:none;padding:0 2px;">×</button></div>
             <div style="height:7px;background:oklch(0.94 0.012 65);border-radius:999px;overflow:hidden;margin-bottom:8px;"><div style="{{ c.barStyle }}"></div></div>
             <div style="display:flex;justify-content:space-between;font-size:11px;color:oklch(0.56 0.02 60);margin-bottom:10px;"><span style="font-family:'Poppins';">{{ c.spentLabel }} / {{ c.budgetLabel }}</span><span style="font-family:'Poppins';color:{{ c.remColor }};">{{ c.remainingLabel }}</span></div>
             <div style="display:flex;gap:5px;"><div style="flex:1;display:flex;align-items:center;border:1px solid oklch(0.91 0.015 65);border-radius:9px;background:#fff;padding:0 8px;"><span style="font-family:'Poppins';font-size:12px;color:oklch(0.6 0.02 60);">$</span><input value="{{ c.draftVal }}" onInput="{{ c.onDraft }}" inputmode="decimal" placeholder="예산" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:7px 4px;font-family:'Poppins';font-size:12px;"></div><button onClick="{{ c.onSave }}" style="border:none;border-radius:9px;background:oklch(0.93 0.02 60);color:oklch(0.44 0.03 55);font-weight:600;padding:0 10px;font-size:11px;flex:none;">✓</button></div>
           </div>
         </sc-for>
+      </div>
+
+      <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:0 0 10px;">사용자 · 카드 관리 <span style="font-weight:400;color:oklch(0.6 0.02 60);font-size:12px;">— 추가/삭제하면 입력 화면에 바로 반영돼요</span></div>
+      <div style="{{ dashManageStyle }}">
+        <div style="flex:1;min-width:0;background:oklch(0.985 0.006 72);border-radius:16px;padding:16px;">
+          <div style="font-size:12px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:10px;">사용자</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"><sc-for list="{{ userManage }}" as="u" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid oklch(0.93 0.012 65);border-radius:10px;padding:7px 10px;"><span style="width:8px;height:8px;border-radius:50%;background:{{ u.dot }};flex:none;"></span><span style="flex:1;min-width:0;font-size:13px;">{{ u.name }}</span><button onClick="{{ u.onRemove }}" title="삭제" style="border:none;background:transparent;color:oklch(0.72 0.05 30);font-size:16px;line-height:1;flex:none;">×</button></div></sc-for></div>
+          <div style="display:flex;gap:5px;"><input value="{{ newUser }}" onInput="{{ onNewUser }}" onKeyDown="{{ onNewUserKey }}" placeholder="새 사용자" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:10px;background:#fff;padding:8px 10px;font-size:12px;outline:none;"><button onClick="{{ addUser }}" style="border:none;border-radius:10px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:8px 12px;font-size:12px;flex:none;">추가</button></div>
+        </div>
+        <div style="flex:1;min-width:0;background:oklch(0.985 0.006 72);border-radius:16px;padding:16px;">
+          <div style="font-size:12px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:10px;">카드</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"><sc-for list="{{ cardManage }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid oklch(0.93 0.012 65);border-radius:10px;padding:7px 10px;"><span style="flex:1;min-width:0;font-size:13px;font-family:'Poppins';">{{ c.name }}</span><button onClick="{{ c.onRemove }}" title="삭제" style="border:none;background:transparent;color:oklch(0.72 0.05 30);font-size:16px;line-height:1;flex:none;">×</button></div></sc-for></div>
+          <div style="display:flex;gap:5px;"><input value="{{ newCard }}" onInput="{{ onNewCard }}" onKeyDown="{{ onNewCardKey }}" placeholder="새 카드" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:10px;background:#fff;padding:8px 10px;font-size:12px;outline:none;"><button onClick="{{ addCard }}" style="border:none;border-radius:10px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:8px 12px;font-size:12px;flex:none;">추가</button></div>
+        </div>
       </div>
 
       <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
@@ -200,12 +211,17 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1120,&quot;height&quot;:820},&quot;currencySymbol&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;$&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;표시&quot;},&quot;showTrend&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;표시&quot;}}">
 class Component extends DCLogic {
   state = (() => {
-    const users = ['이우승', '송혜림'];
-    const cats = ['그로서리', '외식', '생활용품', '통신', '전기비', '기타'];
-    const cards = ['CSP(WS)', 'Bonvoy', 'C.Freedom'];
+    // 목록(항목/사용자/카드)은 localStorage에 저장 → 서버 config가 오면 덮어씀
+    let lists = null;
+    try { const lr = localStorage.getItem('fam-budget-lists-v1'); if (lr) lists = JSON.parse(lr); } catch (e) {}
+    const users = (lists && lists.users && lists.users.length) ? lists.users : ['이우승', '송혜림'];
+    const cats = (lists && lists.cats && lists.cats.length) ? lists.cats : ['그로서리', '외식', '생활용품', '통신', '전기비', '기타'];
+    const cards = (lists && lists.cards && lists.cards.length) ? lists.cards : ['CSP(WS)', 'Bonvoy', 'C.Freedom'];
     let data = {};
     try { const raw = localStorage.getItem('fam-budget-v1'); if (raw) data = JSON.parse(raw) || {}; } catch (e) {}
-    const month = '2026-07';
+    // 오늘 날짜(미 동부시간 기준) → 'YYYY-MM-DD'
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    const month = today.slice(0, 7);
     if (!data[month]) data[month] = { budget: 0, catBudgets: {}, entries: [] };
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 820;
     const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbz2vQqrdjZ30vLUmbWEYBmCrwYbzlzsZ9zRITjUIdKU6EQ77RE7IQcNKh9df4BF5eyZGw/exec';
@@ -216,9 +232,13 @@ class Component extends DCLogic {
       sheetUrl, syncing: false, synced: false, syncMsg: null,
       budgetDraft: String(data[month].budget || ''),
       catBudgetDrafts: {},
-      draft: { date: month + '-01', amount: '', category: cats[0], user: users[0], card: cards[0], memo: '' }
+      newCat: '', newUser: '', newCard: '',
+      draft: { date: today, amount: '', category: cats[0], user: users[0], card: cards[0], memo: '' }
     };
   })();
+
+  // 미 동부시간(ET) 기준 오늘 'YYYY-MM-DD'
+  todayET() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
 
   componentDidMount() {
     this._onResize = () => { const m = window.innerWidth < 820; if (m !== this.state.isMobile) this.setState({ isMobile: m }); };
@@ -241,7 +261,9 @@ class Component extends DCLogic {
       const data = j.months || {};
       this.ensureMonth(data, this.state.month);
       this.save(data);
-      this.setState({ data, syncing: false, synced: true, syncMsg: null, budgetDraft: String((data[this.state.month] || {}).budget || '') });
+      const patch = { data, syncing: false, synced: true, syncMsg: null, budgetDraft: String((data[this.state.month] || {}).budget || '') };
+      this.applyConfig(j.config, patch);
+      this.setState(patch);
     } catch (e) {
       this.setState({ syncing: false, syncMsg: '연결 실패 (로컬 사용중)' });
     }
@@ -255,10 +277,88 @@ class Component extends DCLogic {
       const data = j.months || {};
       this.ensureMonth(data, this.state.month);
       this.save(data);
-      this.setState({ data, syncing: false, synced: true, syncMsg: null });
+      const patch = { data, syncing: false, synced: true, syncMsg: null };
+      this.applyConfig(j.config, patch);
+      this.setState(patch);
     } catch (e) {
       this.setState({ syncing: false, syncMsg: '저장 실패 (로컬만 반영)' });
     }
+  }
+  // 서버 config(목록)를 로컬 상태에 병합. draft 선택값이 사라진 목록을 가리키면 보정.
+  applyConfig(config, patch) {
+    if (!config) return;
+    const cur = this.state;
+    const users = (config.users && config.users.length) ? config.users : cur.users;
+    const cats = (config.cats && config.cats.length) ? config.cats : cur.cats;
+    const cards = (config.cards && config.cards.length) ? config.cards : cur.cards;
+    patch.users = users; patch.cats = cats; patch.cards = cards;
+    this.saveLists(users, cats, cards);
+    const d = { ...cur.draft };
+    if (cats.indexOf(d.category) < 0) d.category = cats[0];
+    if (users.indexOf(d.user) < 0) d.user = users[0];
+    if (cards.indexOf(d.card) < 0) d.card = cards[0];
+    patch.draft = d;
+  }
+  saveLists(users, cats, cards) {
+    try { localStorage.setItem('fam-budget-lists-v1', JSON.stringify({ users, cats, cards })); } catch (e) {}
+  }
+  // 목록 변경을 로컬 저장 + 시트에 조용히 동기화(실패해도 에러 배지 안 띄움 — 로컬은 이미 반영)
+  persistLists(users, cats, cards) {
+    this.saveLists(users, cats, cards);
+    if (!this.state.sheetUrl) return;
+    this.apiPost({ action: 'setLists', lists: { users, cats, cards } }).catch(() => {});
+  }
+
+  setNewCat(v) { this.setState({ newCat: v }); }
+  addCat() {
+    const prev = this.state;
+    const name = (prev.newCat || '').trim();
+    if (!name || prev.cats.indexOf(name) >= 0) { this.setState({ newCat: '' }); return; }
+    const cats = [...prev.cats, name];
+    this.persistLists(prev.users, cats, prev.cards);
+    this.setState({ cats, newCat: '' });
+  }
+  removeCat(name) {
+    const prev = this.state;
+    if (prev.cats.length <= 1) return;
+    const cats = prev.cats.filter(c => c !== name);
+    const draft = prev.draft.category === name ? { ...prev.draft, category: cats[0] } : prev.draft;
+    this.persistLists(prev.users, cats, prev.cards);
+    this.setState({ cats, draft });
+  }
+  setNewUser(v) { this.setState({ newUser: v }); }
+  addUser() {
+    const prev = this.state;
+    const name = (prev.newUser || '').trim();
+    if (!name || prev.users.indexOf(name) >= 0) { this.setState({ newUser: '' }); return; }
+    const users = [...prev.users, name];
+    this.persistLists(users, prev.cats, prev.cards);
+    this.setState({ users, newUser: '' });
+  }
+  removeUser(name) {
+    const prev = this.state;
+    if (prev.users.length <= 1) return;
+    const users = prev.users.filter(u => u !== name);
+    const draft = prev.draft.user === name ? { ...prev.draft, user: users[0] } : prev.draft;
+    this.persistLists(users, prev.cats, prev.cards);
+    this.setState({ users, draft });
+  }
+  setNewCard(v) { this.setState({ newCard: v }); }
+  addCard() {
+    const prev = this.state;
+    const name = (prev.newCard || '').trim();
+    if (!name || prev.cards.indexOf(name) >= 0) { this.setState({ newCard: '' }); return; }
+    const cards = [...prev.cards, name];
+    this.persistLists(prev.users, prev.cats, cards);
+    this.setState({ cards, newCard: '' });
+  }
+  removeCard(name) {
+    const prev = this.state;
+    if (prev.cards.length <= 1) return;
+    const cards = prev.cards.filter(c => c !== name);
+    const draft = prev.draft.card === name ? { ...prev.draft, card: cards[0] } : prev.draft;
+    this.persistLists(prev.users, prev.cats, cards);
+    this.setState({ cards, draft });
   }
   fmt(n) { const sym = this.props.currencySymbol != null ? this.props.currencySymbol : '$'; const x = Number(n) || 0; return (x < 0 ? '-' : '') + sym + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
 
@@ -268,7 +368,10 @@ class Component extends DCLogic {
     this.setState(prev => {
       const data = { ...prev.data };
       if (!data[m]) data[m] = { budget: 0, catBudgets: {}, entries: [] };
-      return { month: m, data, budgetDraft: String(data[m].budget || ''), catBudgetDrafts: {}, draft: { ...prev.draft, date: m + '-01' } };
+      // 선택한 달이 이번 달이면 오늘 날짜, 아니면 그 달 1일
+      const t = this.todayET();
+      const date = t.slice(0, 7) === m ? t : m + '-01';
+      return { month: m, data, budgetDraft: String(data[m].budget || ''), catBudgetDrafts: {}, draft: { ...prev.draft, date } };
     });
   }
   setDraft(field, val) { this.setState(prev => ({ draft: { ...prev.draft, [field]: val } })); }
@@ -367,7 +470,8 @@ class Component extends DCLogic {
         barStyle: { width: w + '%', height: '100%', borderRadius: '999px', background: overC ? 'oklch(0.60 0.16 25)' : col, transition: 'width .35s ease' },
         draftVal: s.catBudgetDrafts[c] !== undefined ? s.catBudgetDrafts[c] : (cb ? String(cb) : ''),
         onDraft: (e) => this.setCatDraft(c, e.target.value),
-        onSave: () => this.saveCatBudget(c)
+        onSave: () => this.saveCatBudget(c),
+        onRemove: () => this.removeCat(c)
       };
     });
 
@@ -444,7 +548,14 @@ class Component extends DCLogic {
       addEntry: () => this.addEntry(),
       userOpts: s.users, cardOpts: s.cards, catOpts: s.cats,
       budgetDraft: s.budgetDraft, onBudget: (e) => this.setBudgetDraft(e.target.value), saveBudget: () => this.saveBudget(),
-      userChips, catChips, cardChips
+      userChips, catChips, cardChips,
+      // 항목/사용자/카드 관리
+      newCat: s.newCat, onNewCat: (e) => this.setNewCat(e.target.value), onNewCatKey: (e) => { if (e.key === 'Enter') this.addCat(); }, addCat: () => this.addCat(),
+      newUser: s.newUser, onNewUser: (e) => this.setNewUser(e.target.value), onNewUserKey: (e) => { if (e.key === 'Enter') this.addUser(); }, addUser: () => this.addUser(),
+      newCard: s.newCard, onNewCard: (e) => this.setNewCard(e.target.value), onNewCardKey: (e) => { if (e.key === 'Enter') this.addCard(); }, addCard: () => this.addCard(),
+      userManage: s.users.map((u, i) => ({ name: u, dot: i === 0 ? 'oklch(0.80 0.10 40)' : 'oklch(0.72 0.09 265)', onRemove: () => this.removeUser(u) })),
+      cardManage: s.cards.map(c => ({ name: c, onRemove: () => this.removeCard(c) })),
+      dashManageStyle: { display: 'flex', gap: '12px', flexDirection: isMobile ? 'column' : 'row', marginBottom: '18px' }
     };
   }
 }

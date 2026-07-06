@@ -26,6 +26,7 @@ var SECRET = '';
 
 var HEADER = ['id', 'date', 'amount', 'category', 'user', 'card', 'memo'];
 var META = '_meta';
+var LISTS_KEY = '__lists__'; // _meta 시트의 특수 행: 항목/사용자/카드 목록 저장
 
 /* ---------- HTTP 엔드포인트 ---------- */
 
@@ -46,17 +47,23 @@ function json(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// 모든 정상 응답: 월별 데이터 + 목록(항목/사용자/카드) 설정을 함께 반환
+function respond() {
+  return { ok: true, months: readAll(), config: readConfig() };
+}
+
 function handle(action, p, token) {
   if (SECRET && String(token) !== String(SECRET)) return { ok: false, error: 'unauthorized' };
   var lock = LockService.getScriptLock();
   try { lock.waitLock(20000); } catch (e) { return { ok: false, error: 'busy' }; }
   try {
     switch (action) {
-      case 'all':          return { ok: true, months: readAll() };
-      case 'addEntry':     addEntry(p.month, p.entry);        return { ok: true, months: readAll() };
-      case 'deleteEntry':  deleteEntry(p.month, p.id);        return { ok: true, months: readAll() };
-      case 'setBudget':    setBudget(p.month, p.budget);      return { ok: true, months: readAll() };
-      case 'setCatBudget': setCatBudget(p.month, p.catBudgets); return { ok: true, months: readAll() };
+      case 'all':          return respond();
+      case 'addEntry':     addEntry(p.month, p.entry);        return respond();
+      case 'deleteEntry':  deleteEntry(p.month, p.id);        return respond();
+      case 'setBudget':    setBudget(p.month, p.budget);      return respond();
+      case 'setCatBudget': setCatBudget(p.month, p.catBudgets); return respond();
+      case 'setLists':     setLists(p.lists);                 return respond();
       default:             return { ok: false, error: 'unknown action: ' + action };
     }
   } catch (err) {
@@ -106,6 +113,7 @@ function readAll() {
   var mv = metaSheet().getDataRange().getValues();
   for (var i = 1; i < mv.length; i++) {
     var mo = String(mv[i][0]); if (!mo) continue;
+    if (!/^\d{4}-\d{2}$/.test(mo)) continue; // __lists__ 등 특수 행은 건너뜀
     months[mo] = months[mo] || { budget: 0, catBudgets: {}, entries: [] };
     months[mo].budget = Number(mv[i][1]) || 0;
     try { months[mo].catBudgets = mv[i][2] ? JSON.parse(mv[i][2]) : {}; }
@@ -160,6 +168,24 @@ function deleteEntry(month, id) {
   for (var r = vals.length - 1; r >= 1; r--) {
     if (String(vals[r][0]) === String(id)) sh.deleteRow(r + 1);
   }
+}
+
+/* ---------- 목록(항목/사용자/카드) ---------- */
+
+// _meta 시트의 __lists__ 행(catBudgets 열)에 JSON으로 저장된 목록을 읽음
+function readConfig() {
+  var sh = metaSheet();
+  var vals = sh.getDataRange().getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]) === LISTS_KEY) {
+      try { return JSON.parse(vals[i][2] || 'null'); } catch (e) { return null; }
+    }
+  }
+  return null;
+}
+
+function setLists(lists) {
+  upsertMeta(LISTS_KEY, function (row) { row[2] = JSON.stringify(lists || {}); });
 }
 
 function setBudget(month, budget) {
