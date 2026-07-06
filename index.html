@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Gowun Dodum',sans-serif;color:oklch(0.34 0.02 55);-webkit-font-smoothing:antialiased;background:oklch(0.972 0.014 72);}
+  select,input,button,textarea{font-family:inherit;color:inherit;}
+  button{cursor:pointer;}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:oklch(0.88 0.02 60);border-radius:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" rx="22" fill="oklch(0.90 0.05 45)"/>
+    <circle cx="50" cy="50" r="24" fill="none" stroke="oklch(0.70 0.12 40)" stroke-width="7"/>
+    <text x="50" y="60" font-size="26" font-weight="700" text-anchor="middle" fill="oklch(0.40 0.06 155)" font-family="Poppins, sans-serif">$</text>
+  </svg>
+</template>
+<div style="{{ outerStyle }}">
+  <div style="{{ shellStyle }}">
+
+    <!-- ===== app bar ===== -->
+    <div style="{{ appbarStyle }}">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+        <h1 style="margin:0;font-size:22px;font-weight:400;letter-spacing:-0.01em;color:oklch(0.36 0.03 50);">가족 가계부</h1>
+        <span style="font-size:13px;color:oklch(0.55 0.02 60);">이우승 · 송혜림 <span style="font-family:'Poppins';font-weight:600;color:oklch(0.42 0.03 50);">{{ headerMonthLabel }}</span></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button onClick="{{ onRefresh }}" title="시트에서 새로고침" style="{{ syncStyle }}">{{ syncLabel }}</button>
+        <div style="display:flex;gap:6px;background:oklch(0.955 0.012 65);padding:4px;border-radius:14px;">
+          <button onClick="{{ onHome }}" style="{{ navHomeStyle }}">홈</button>
+          <button onClick="{{ onDash }}" style="{{ navDashStyle }}">대시보드</button>
+        </div>
+        <div style="display:flex;gap:4px;background:oklch(0.955 0.012 65);padding:4px;border-radius:12px;">
+          <button onClick="{{ onViewAuto }}" style="{{ vAutoStyle }}">자동</button>
+          <button onClick="{{ onViewDesktop }}" style="{{ vDeskStyle }}">PC</button>
+          <button onClick="{{ onViewMobile }}" style="{{ vMobileStyle }}">모바일</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== month tabs ===== -->
+    <div style="display:flex;gap:5px;overflow-x:auto;padding:0 2px 10px;">
+      <sc-for list="{{ monthTabs }}" as="m" hint-placeholder-count="8"><button onClick="{{ m.onClick }}" style="{{ m.tabStyle }}">{{ m.label }}</button></sc-for>
+    </div>
+
+    <!-- =========================================================== -->
+    <!-- HOME · DESKTOP (두 칸)                                       -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ showHomeDesktop }}" hint-placeholder-val="{{ true }}">
+    <div style="background:oklch(0.995 0.004 75);border-radius:24px;box-shadow:0 20px 60px -34px oklch(0.5 0.05 50 / 0.4);overflow:hidden;border:1px solid oklch(0.93 0.01 65);display:flex;align-items:stretch;">
+      <!-- LEFT input -->
+      <div style="width:352px;flex:none;padding:24px;border-right:1px solid oklch(0.94 0.01 65);background:oklch(0.985 0.006 72);">
+        <p style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:0 0 12px;">이번 달 예산</p>
+        <div style="display:flex;gap:8px;margin-bottom:24px;">
+          <div style="flex:1;display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 12px;"><span style="font-family:'Poppins';color:oklch(0.6 0.02 60);">$</span><input value="{{ budgetDraft }}" onInput="{{ onBudget }}" inputmode="decimal" placeholder="예산 금액" style="flex:1;border:none;outline:none;background:transparent;padding:11px 8px;font-family:'Poppins';font-size:15px;"></div>
+          <button onClick="{{ saveBudget }}" style="border:none;border-radius:12px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:0 16px;font-size:13px;">설정</button>
+        </div>
+        <p style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:0 0 12px;">지출 입력</p>
+        <label style="font-size:11px;color:oklch(0.56 0.02 60);display:block;margin-bottom:5px;">금액</label>
+        <div style="display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 14px;margin-bottom:12px;"><span style="font-family:'Poppins';font-size:20px;color:oklch(0.55 0.02 60);">$</span><input value="{{ draftAmount }}" onInput="{{ onAmount }}" onKeyDown="{{ onAmountKey }}" inputmode="decimal" placeholder="0" style="flex:1;border:none;outline:none;background:transparent;padding:12px 8px;font-family:'Poppins';font-size:22px;font-weight:600;"></div>
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <div style="flex:1;"><label style="font-size:11px;color:oklch(0.56 0.02 60);display:block;margin-bottom:5px;">날짜</label><input type="date" value="{{ draftDate }}" onInput="{{ onDate }}" style="width:100%;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:10px 12px;font-size:13px;outline:none;"></div>
+          <div style="flex:1;"><label style="font-size:11px;color:oklch(0.56 0.02 60);display:block;margin-bottom:5px;">항목</label><select value="{{ draftCategory }}" onChange="{{ onCategory }}" style="width:100%;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:10px 12px;font-size:13px;outline:none;"><sc-for list="{{ catOpts }}" as="c" hint-placeholder-count="6"><option value="{{ c }}">{{ c }}</option></sc-for></select></div>
+        </div>
+        <label style="font-size:11px;color:oklch(0.56 0.02 60);display:block;margin-bottom:5px;">사용자</label>
+        <div style="display:flex;gap:6px;margin-bottom:12px;"><sc-for list="{{ userChips }}" as="u" hint-placeholder-count="2"><button onClick="{{ u.onClick }}" style="{{ u.chipStyle }}">{{ u.name }}</button></sc-for></div>
+        <label style="font-size:11px;color:oklch(0.56 0.02 60);display:block;margin-bottom:5px;">카드</label>
+        <select value="{{ draftCard }}" onChange="{{ onCard }}" style="width:100%;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:10px 12px;font-size:13px;outline:none;margin-bottom:12px;"><sc-for list="{{ cardOpts }}" as="c" hint-placeholder-count="3"><option value="{{ c }}">{{ c }}</option></sc-for></select>
+        <input value="{{ draftMemo }}" onInput="{{ onMemo }}" placeholder="메모 (선택)" style="width:100%;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:11px 12px;font-size:13px;outline:none;margin-bottom:16px;">
+        <button onClick="{{ addEntry }}" style="width:100%;border:none;border-radius:14px;background:oklch(0.80 0.11 40);color:oklch(0.28 0.05 40);font-weight:600;padding:14px;font-size:15px;">+ 내역 추가</button>
+      </div>
+      <!-- RIGHT summary -->
+      <div style="flex:1;padding:24px 26px;display:flex;flex-direction:column;gap:22px;min-width:0;">
+        <div style="display:flex;align-items:center;gap:26px;">
+          <div style="position:relative;width:168px;height:168px;flex:none;">
+            <div style="{{ gaugeStyle }}"></div>
+            <div style="position:absolute;inset:19px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;"><span style="font-size:11px;color:oklch(0.56 0.02 60);">남은 금액</span><span style="font-family:'Poppins';font-size:28px;font-weight:700;color:{{ remainingColor }};">{{ remainingLabel }}</span><span style="font-size:11px;color:oklch(0.56 0.02 60);font-family:'Poppins';">{{ pctLabel }} 사용</span></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:11px;border-bottom:1px dashed oklch(0.9 0.01 65);"><span style="font-size:13px;color:oklch(0.56 0.02 60);">이번 달 예산</span><span style="font-family:'Poppins';font-size:19px;font-weight:600;">{{ budgetLabel }}</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:11px;border-bottom:1px dashed oklch(0.9 0.01 65);"><span style="font-size:13px;color:oklch(0.56 0.02 60);">지금까지 지출</span><span style="font-family:'Poppins';font-size:19px;font-weight:600;color:oklch(0.6 0.11 40);">{{ spentLabel }}</span></div>
+            <div style="display:flex;gap:14px;"><sc-for list="{{ userStats }}" as="u" hint-placeholder-count="2"><div style="flex:1;"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:50%;background:{{ u.dot }};"></span><span style="font-size:12px;color:oklch(0.5 0.02 60);">{{ u.name }}</span></div><div style="font-family:'Poppins';font-size:15px;font-weight:600;">{{ u.spentLabel }}</div></div></sc-for></div>
+          </div>
+        </div>
+        <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);">일자별 지출 추이</span><span style="font-size:11px;color:oklch(0.6 0.02 60);font-family:'Poppins';">1 → {{ daysInMonth }}일</span></div>
+          <div style="display:flex;align-items:flex-end;gap:2px;height:76px;background:oklch(0.985 0.006 72);border-radius:12px;padding:8px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"></div></div></sc-for></div>
+        </div>
+        </sc-if>
+        <div>
+          <span style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);">최근 내역</span>
+          <div style="margin-top:10px;max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
+            <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;text-align:center;color:oklch(0.6 0.02 60);font-size:13px;">아직 입력된 내역이 없어요 🌱</div></sc-if>
+            <sc-for list="{{ entriesList }}" as="e" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:oklch(0.985 0.006 72);border-radius:12px;"><span style="font-family:'Poppins';font-size:12px;color:oklch(0.55 0.02 60);width:38px;flex:none;">{{ e.dateLabel }}</span><span style="width:9px;height:9px;border-radius:50%;background:{{ e.catColor }};flex:none;"></span><div style="flex:1;min-width:0;"><div style="font-size:13px;">{{ e.category }} <span style="color:oklch(0.62 0.02 60);font-size:12px;">{{ e.memo }}</span></div><div style="font-size:11px;color:oklch(0.6 0.02 60);">{{ e.user }} · {{ e.card }}</div></div><span style="font-family:'Poppins';font-size:14px;font-weight:600;flex:none;">{{ e.amountLabel }}</span><button onClick="{{ e.onDelete }}" style="border:none;background:transparent;color:oklch(0.7 0.05 30);font-size:15px;flex:none;">×</button></div></sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- HOME · MOBILE (흐름)                                         -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ showHomeMobile }}" hint-placeholder-val="{{ false }}">
+    <div style="background:oklch(0.995 0.004 75);border-radius:24px;box-shadow:0 16px 44px -30px oklch(0.5 0.05 50 / 0.4);border:1px solid oklch(0.93 0.01 65);padding:18px;">
+      <div style="background:oklch(0.965 0.02 55);border-radius:22px;padding:22px;text-align:center;margin-bottom:16px;"><div style="font-size:12px;color:oklch(0.55 0.02 60);margin-bottom:4px;">{{ headerMonthLabel }} 남은 금액</div><div style="font-family:'Poppins';font-size:40px;font-weight:700;line-height:1;color:{{ remainingColor }};">{{ remainingLabel }}</div><div style="margin:14px 0 8px;height:10px;background:oklch(0.93 0.015 65);border-radius:999px;overflow:hidden;"><div style="{{ ratioBarStyle }}"></div></div><div style="font-size:12px;color:oklch(0.55 0.02 60);font-family:'Poppins';">예산 {{ budgetLabel }} · 지출 {{ spentLabel }} · {{ pctLabel }}</div></div>
+      <div style="border:1px solid oklch(0.93 0.012 65);border-radius:20px;padding:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;border-bottom:2px solid oklch(0.9 0.015 65);padding-bottom:8px;margin-bottom:14px;"><span style="font-family:'Poppins';font-size:24px;color:oklch(0.55 0.02 60);">$</span><input value="{{ draftAmount }}" onInput="{{ onAmount }}" onKeyDown="{{ onAmountKey }}" inputmode="decimal" placeholder="0" style="flex:1;border:none;outline:none;background:transparent;padding:2px 8px;font-family:'Poppins';font-size:26px;font-weight:600;"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"><sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.onClick }}" style="{{ c.chipStyle }}">{{ c.name }}</button></sc-for></div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;"><sc-for list="{{ userChips }}" as="u" hint-placeholder-count="2"><button onClick="{{ u.onClick }}" style="{{ u.chipStyle }}">{{ u.name }}</button></sc-for></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;"><sc-for list="{{ cardChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.chipSmallStyle }}">{{ c.name }}</button></sc-for></div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;"><input type="date" value="{{ draftDate }}" onInput="{{ onDate }}" style="flex:none;width:140px;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 10px;font-size:12px;outline:none;"><input value="{{ draftMemo }}" onInput="{{ onMemo }}" placeholder="메모" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 12px;font-size:13px;outline:none;"></div>
+        <button onClick="{{ addEntry }}" style="width:100%;border:none;border-radius:14px;background:oklch(0.80 0.11 40);color:oklch(0.28 0.05 40);font-weight:600;padding:14px;font-size:15px;">+ 추가</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;"><span style="font-size:12px;color:oklch(0.55 0.02 60);flex:none;">예산 설정</span><div style="flex:1;display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 10px;"><span style="font-family:'Poppins';color:oklch(0.6 0.02 60);">$</span><input value="{{ budgetDraft }}" onInput="{{ onBudget }}" inputmode="decimal" style="flex:1;border:none;outline:none;background:transparent;padding:9px 6px;font-family:'Poppins';font-size:14px;"></div><button onClick="{{ saveBudget }}" style="border:none;border-radius:12px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:9px 14px;font-size:13px;flex:none;">저장</button></div>
+      <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:8px;">일자별 추이</div><div style="display:flex;align-items:flex-end;gap:2px;height:60px;background:oklch(0.985 0.006 72);border-radius:12px;padding:8px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"></div></div></sc-for></div></div>
+      </sc-if>
+      <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:10px;">내역</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:oklch(0.6 0.02 60);font-size:13px;">아직 내역이 없어요 🌱</div></sc-if>
+        <sc-for list="{{ entriesList }}" as="e" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:oklch(0.985 0.006 72);border-radius:12px;"><span style="font-family:'Poppins';font-size:11px;color:oklch(0.55 0.02 60);width:34px;flex:none;">{{ e.dateLabel }}</span><span style="width:9px;height:9px;border-radius:50%;background:{{ e.catColor }};flex:none;"></span><div style="flex:1;min-width:0;"><div style="font-size:13px;">{{ e.category }}</div><div style="font-size:11px;color:oklch(0.6 0.02 60);">{{ e.user }} · {{ e.card }}</div></div><span style="font-family:'Poppins';font-size:14px;font-weight:600;flex:none;">{{ e.amountLabel }}</span><button onClick="{{ e.onDelete }}" style="border:none;background:transparent;color:oklch(0.7 0.05 30);font-size:15px;flex:none;">×</button></div></sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- DASHBOARD (반응형)                                          -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ showDash }}" hint-placeholder-val="{{ false }}">
+    <div style="background:oklch(0.995 0.004 75);border-radius:24px;box-shadow:0 20px 60px -34px oklch(0.5 0.05 50 / 0.4);border:1px solid oklch(0.93 0.01 65);padding:22px;">
+      <div style="{{ dashTopStyle }}">
+        <div style="{{ dashGaugeCardStyle }}">
+          <div style="position:relative;width:120px;height:120px;flex:none;"><div style="{{ gaugeStyle }}"></div><div style="position:absolute;inset:15px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span style="font-size:10px;color:oklch(0.56 0.02 60);">남음</span><span style="font-family:'Poppins';font-size:18px;font-weight:700;color:{{ remainingColor }};line-height:1.1;">{{ remainingLabel }}</span><span style="font-size:10px;color:oklch(0.56 0.02 60);font-family:'Poppins';">{{ pctLabel }}</span></div></div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11px;color:oklch(0.56 0.02 60);">이번 달 예산</div><div style="font-family:'Poppins';font-size:18px;font-weight:600;margin-bottom:8px;">{{ budgetLabel }}</div><div style="font-size:11px;color:oklch(0.56 0.02 60);">지출</div><div style="font-family:'Poppins';font-size:18px;font-weight:600;color:oklch(0.6 0.11 40);">{{ spentLabel }}</div></div>
+        </div>
+        <div style="flex:1;min-width:220px;background:oklch(0.985 0.006 72);border-radius:20px;padding:20px;">
+          <div style="font-size:12px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:8px;">전체 예산 설정</div>
+          <div style="display:flex;gap:8px;margin-bottom:18px;"><div style="flex:1;display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 12px;"><span style="font-family:'Poppins';color:oklch(0.6 0.02 60);">$</span><input value="{{ budgetDraft }}" onInput="{{ onBudget }}" inputmode="decimal" style="flex:1;border:none;outline:none;background:transparent;padding:10px 8px;font-family:'Poppins';font-size:15px;"></div><button onClick="{{ saveBudget }}" style="border:none;border-radius:12px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:0 16px;font-size:13px;">설정</button></div>
+          <div style="font-size:12px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:10px;">사용자별 지출</div>
+          <sc-for list="{{ userStats }}" as="u" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span style="width:44px;font-size:12px;flex:none;">{{ u.name }}</span><div style="flex:1;height:9px;background:oklch(0.94 0.012 65);border-radius:999px;overflow:hidden;"><div style="{{ u.barStyle }}"></div></div><span style="font-family:'Poppins';font-size:12px;width:70px;text-align:right;flex:none;">{{ u.spentLabel }}</span></div></sc-for>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:16px 0 10px;">항목별 예산 <span style="font-weight:400;color:oklch(0.6 0.02 60);font-size:12px;">— 항목마다 예산을 정하면 남은 금액이 보여요</span></div>
+      <div style="{{ dashCatGridStyle }}">
+        <sc-for list="{{ cats }}" as="c" hint-placeholder-count="6">
+          <div style="border:1px solid oklch(0.93 0.012 65);border-radius:16px;padding:14px;">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:9px;height:9px;border-radius:50%;background:{{ c.color }};"></span><span style="font-size:13px;font-weight:600;">{{ c.name }}</span></div>
+            <div style="height:7px;background:oklch(0.94 0.012 65);border-radius:999px;overflow:hidden;margin-bottom:8px;"><div style="{{ c.barStyle }}"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:oklch(0.56 0.02 60);margin-bottom:10px;"><span style="font-family:'Poppins';">{{ c.spentLabel }} / {{ c.budgetLabel }}</span><span style="font-family:'Poppins';color:{{ c.remColor }};">{{ c.remainingLabel }}</span></div>
+            <div style="display:flex;gap:5px;"><div style="flex:1;display:flex;align-items:center;border:1px solid oklch(0.91 0.015 65);border-radius:9px;background:#fff;padding:0 8px;"><span style="font-family:'Poppins';font-size:12px;color:oklch(0.6 0.02 60);">$</span><input value="{{ c.draftVal }}" onInput="{{ c.onDraft }}" inputmode="decimal" placeholder="예산" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:7px 4px;font-family:'Poppins';font-size:12px;"></div><button onClick="{{ c.onSave }}" style="border:none;border-radius:9px;background:oklch(0.93 0.02 60);color:oklch(0.44 0.03 55);font-weight:600;padding:0 10px;font-size:11px;flex:none;">✓</button></div>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);">일자별 지출 추이</span><span style="font-size:11px;color:oklch(0.6 0.02 60);font-family:'Poppins';">1 → {{ daysInMonth }}일</span></div><div style="display:flex;align-items:flex-end;gap:3px;height:88px;background:oklch(0.985 0.006 72);border-radius:14px;padding:10px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"></div></div></sc-for></div></div>
+      </sc-if>
+
+      <div style="{{ dashBottomStyle }}">
+        <div style="{{ dashAddStyle }}">
+          <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:12px;">지출 입력</div>
+          <div style="display:flex;align-items:center;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:0 12px;margin-bottom:10px;"><span style="font-family:'Poppins';font-size:18px;color:oklch(0.55 0.02 60);">$</span><input value="{{ draftAmount }}" onInput="{{ onAmount }}" onKeyDown="{{ onAmountKey }}" inputmode="decimal" placeholder="0" style="flex:1;border:none;outline:none;background:transparent;padding:10px 8px;font-family:'Poppins';font-size:18px;font-weight:600;"></div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;"><select value="{{ draftCategory }}" onChange="{{ onCategory }}" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 10px;font-size:12px;outline:none;"><sc-for list="{{ catOpts }}" as="c" hint-placeholder-count="6"><option value="{{ c }}">{{ c }}</option></sc-for></select><input type="date" value="{{ draftDate }}" onInput="{{ onDate }}" style="flex:none;width:130px;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 8px;font-size:12px;outline:none;"></div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;"><select value="{{ draftUser }}" onChange="{{ onUser }}" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 10px;font-size:12px;outline:none;"><sc-for list="{{ userOpts }}" as="u" hint-placeholder-count="2"><option value="{{ u }}">{{ u }}</option></sc-for></select><select value="{{ draftCard }}" onChange="{{ onCard }}" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 10px;font-size:12px;outline:none;"><sc-for list="{{ cardOpts }}" as="c" hint-placeholder-count="3"><option value="{{ c }}">{{ c }}</option></sc-for></select></div>
+          <input value="{{ draftMemo }}" onInput="{{ onMemo }}" placeholder="메모 (선택)" style="width:100%;border:1px solid oklch(0.90 0.015 65);border-radius:12px;background:#fff;padding:9px 12px;font-size:12px;outline:none;margin-bottom:12px;">
+          <button onClick="{{ addEntry }}" style="width:100%;border:none;border-radius:12px;background:oklch(0.80 0.11 40);color:oklch(0.28 0.05 40);font-weight:600;padding:12px;font-size:14px;">+ 내역 추가</button>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:10px;">최근 내역 <span style="font-weight:400;color:oklch(0.6 0.02 60);font-family:'Poppins';">({{ entriesCount }})</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;">
+            <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;text-align:center;color:oklch(0.6 0.02 60);font-size:13px;">아직 입력된 내역이 없어요 🌱</div></sc-if>
+            <sc-for list="{{ entriesList }}" as="e" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:oklch(0.985 0.006 72);border-radius:12px;"><span style="font-family:'Poppins';font-size:12px;color:oklch(0.55 0.02 60);width:38px;flex:none;">{{ e.dateLabel }}</span><span style="width:9px;height:9px;border-radius:50%;background:{{ e.catColor }};flex:none;"></span><div style="flex:1;min-width:0;"><div style="font-size:13px;">{{ e.category }} <span style="color:oklch(0.62 0.02 60);font-size:12px;">{{ e.memo }}</span></div><div style="font-size:11px;color:oklch(0.6 0.02 60);">{{ e.user }} · {{ e.card }}</div></div><span style="font-family:'Poppins';font-size:14px;font-weight:600;flex:none;">{{ e.amountLabel }}</span><button onClick="{{ e.onDelete }}" style="border:none;background:transparent;color:oklch(0.7 0.05 30);font-size:15px;flex:none;">×</button></div></sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <div style="text-align:center;color:oklch(0.62 0.02 60);font-size:12px;padding:16px 0 8px;">데스크톱은 두 칸, 모바일은 흐름형으로 자동 전환 · 데이터는 저장됩니다</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1120,&quot;height&quot;:820},&quot;currencySymbol&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;$&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;표시&quot;},&quot;showTrend&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;표시&quot;}}">
+class Component extends DCLogic {
+  state = (() => {
+    const users = ['이우승', '송혜림'];
+    const cats = ['그로서리', '외식', '생활용품', '통신', '전기비', '기타'];
+    const cards = ['CSP(WS)', 'Bonvoy', 'C.Freedom'];
+    let data = {};
+    try { const raw = localStorage.getItem('fam-budget-v1'); if (raw) data = JSON.parse(raw) || {}; } catch (e) {}
+    const month = '2026-07';
+    if (!data[month]) data[month] = { budget: 0, catBudgets: {}, entries: [] };
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 820;
+    const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbz2vQqrdjZ30vLUmbWEYBmCrwYbzlzsZ9zRITjUIdKU6EQ77RE7IQcNKh9df4BF5eyZGw/exec';
+    let sheetUrl = DEFAULT_URL;
+    try { const u = localStorage.getItem('fam-budget-url'); if (u) sheetUrl = u; } catch (e) {}
+    return {
+      month, data, users, cats, cards, isMobile, tab: 'home', viewMode: 'auto',
+      sheetUrl, syncing: false, synced: false, syncMsg: null,
+      budgetDraft: String(data[month].budget || ''),
+      catBudgetDrafts: {},
+      draft: { date: month + '-01', amount: '', category: cats[0], user: users[0], card: cards[0], memo: '' }
+    };
+  })();
+
+  componentDidMount() {
+    this._onResize = () => { const m = window.innerWidth < 820; if (m !== this.state.isMobile) this.setState({ isMobile: m }); };
+    window.addEventListener('resize', this._onResize);
+    this.pull();
+  }
+  componentWillUnmount() { if (this._onResize) window.removeEventListener('resize', this._onResize); }
+
+  save(data) { try { localStorage.setItem('fam-budget-v1', JSON.stringify(data)); } catch (e) {} }
+
+  ensureMonth(data, m) { if (!data[m]) data[m] = { budget: 0, catBudgets: {}, entries: [] }; }
+  async apiGet() { const r = await fetch(this.state.sheetUrl + '?action=all'); return r.json(); }
+  async apiPost(payload) { const r = await fetch(this.state.sheetUrl, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } }); return r.json(); }
+  async pull() {
+    if (!this.state.sheetUrl) return;
+    this.setState({ syncing: true, syncMsg: null });
+    try {
+      const j = await this.apiGet();
+      if (!j || !j.ok) throw new Error((j && j.error) || 'load failed');
+      const data = j.months || {};
+      this.ensureMonth(data, this.state.month);
+      this.save(data);
+      this.setState({ data, syncing: false, synced: true, syncMsg: null, budgetDraft: String((data[this.state.month] || {}).budget || '') });
+    } catch (e) {
+      this.setState({ syncing: false, syncMsg: '연결 실패 (로컬 사용중)' });
+    }
+  }
+  async send(payload) {
+    if (!this.state.sheetUrl) return;
+    this.setState({ syncing: true });
+    try {
+      const j = await this.apiPost(payload);
+      if (!j || !j.ok) throw new Error((j && j.error) || 'save failed');
+      const data = j.months || {};
+      this.ensureMonth(data, this.state.month);
+      this.save(data);
+      this.setState({ data, syncing: false, synced: true, syncMsg: null });
+    } catch (e) {
+      this.setState({ syncing: false, syncMsg: '저장 실패 (로컬만 반영)' });
+    }
+  }
+  fmt(n) { const sym = this.props.currencySymbol != null ? this.props.currencySymbol : '$'; const x = Number(n) || 0; return (x < 0 ? '-' : '') + sym + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+
+  setTab(t) { this.setState({ tab: t }); }
+  setViewMode(v) { this.setState({ viewMode: v }); }
+  setMonth(m) {
+    this.setState(prev => {
+      const data = { ...prev.data };
+      if (!data[m]) data[m] = { budget: 0, catBudgets: {}, entries: [] };
+      return { month: m, data, budgetDraft: String(data[m].budget || ''), catBudgetDrafts: {}, draft: { ...prev.draft, date: m + '-01' } };
+    });
+  }
+  setDraft(field, val) { this.setState(prev => ({ draft: { ...prev.draft, [field]: val } })); }
+  addEntry() {
+    const prev = this.state;
+    const amt = parseFloat(prev.draft.amount);
+    if (!amt || amt <= 0) return;
+    const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: prev.draft.date || prev.month + '-01', amount: amt, category: prev.draft.category, user: prev.draft.user, card: prev.draft.card, memo: prev.draft.memo || '' };
+    const data = { ...prev.data };
+    const cur = { ...data[prev.month] };
+    cur.entries = [...cur.entries, entry];
+    data[prev.month] = cur;
+    this.save(data);
+    this.setState({ data, draft: { ...prev.draft, amount: '', memo: '' } });
+    this.send({ action: 'addEntry', month: prev.month, entry: entry });
+  }
+  deleteEntry(id) {
+    const prev = this.state;
+    const data = { ...prev.data };
+    const cur = { ...data[prev.month] };
+    cur.entries = cur.entries.filter(e => e.id !== id);
+    data[prev.month] = cur;
+    this.save(data);
+    this.setState({ data });
+    this.send({ action: 'deleteEntry', month: prev.month, id: id });
+  }
+  setBudgetDraft(v) { this.setState({ budgetDraft: v }); }
+  saveBudget() {
+    const prev = this.state;
+    const data = { ...prev.data };
+    const cur = { ...data[prev.month] };
+    cur.budget = parseFloat(prev.budgetDraft) || 0;
+    data[prev.month] = cur;
+    this.save(data);
+    this.setState({ data });
+    this.send({ action: 'setBudget', month: prev.month, budget: cur.budget });
+  }
+  setCatDraft(cat, v) { this.setState(prev => ({ catBudgetDrafts: { ...prev.catBudgetDrafts, [cat]: v } })); }
+  saveCatBudget(cat) {
+    const prev = this.state;
+    const data = { ...prev.data };
+    const cur = { ...data[prev.month] };
+    cur.catBudgets = { ...cur.catBudgets, [cat]: parseFloat(prev.catBudgetDrafts[cat]) || 0 };
+    data[prev.month] = cur;
+    this.save(data);
+    this.setState({ data });
+    this.send({ action: 'setCatBudget', month: prev.month, catBudgets: cur.catBudgets });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const fmt = this.fmt.bind(this);
+    const cur = s.data[s.month] || { budget: 0, catBudgets: {}, entries: [] };
+    const entries = cur.entries || [];
+    const budget = Number(cur.budget) || 0;
+    const spent = entries.reduce((a, e) => a + (Number(e.amount) || 0), 0);
+    const remaining = budget - spent;
+    const ratio = budget > 0 ? spent / budget : 0;
+    const over = budget > 0 && spent > budget;
+    const arc = over ? 'oklch(0.60 0.16 25)' : 'oklch(0.80 0.11 40)';
+    const deg = Math.min(Math.max(ratio, 0), 1) * 360;
+    const gaugeStyle = { position: 'absolute', inset: '0', borderRadius: '50%', background: 'conic-gradient(' + arc + ' ' + deg + 'deg, oklch(0.93 0.02 60) 0deg)' };
+    const ratioPct = Math.min(Math.max(ratio, 0), 1) * 100;
+    const ratioBarStyle = { width: ratioPct + '%', height: '100%', borderRadius: '999px', background: arc, transition: 'width .35s ease' };
+    const remainingColor = remaining < 0 ? 'oklch(0.58 0.17 25)' : 'oklch(0.44 0.07 155)';
+    const pctLabel = budget > 0 ? Math.round(ratio * 100) + '%' : '—';
+
+    const catColorArr = ['oklch(0.80 0.10 40)', 'oklch(0.82 0.09 95)', 'oklch(0.79 0.08 150)', 'oklch(0.78 0.08 225)', 'oklch(0.76 0.09 295)', 'oklch(0.80 0.09 355)'];
+
+    const parts = s.month.split('-'); const yy = +parts[0], mm = +parts[1];
+    const daysInMonth = new Date(yy, mm, 0).getDate();
+    const dayMap = {};
+    entries.forEach(e => { const dd = +String(e.date || '').split('-')[2] || 0; if (dd) dayMap[dd] = (dayMap[dd] || 0) + (Number(e.amount) || 0); });
+    let maxDay = 0; for (let d = 1; d <= daysInMonth; d++) { if ((dayMap[d] || 0) > maxDay) maxDay = dayMap[d]; }
+    const trend = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const v = dayMap[d] || 0;
+      const h = maxDay > 0 ? (v > 0 ? Math.max(8, Math.round(v / maxDay * 100)) : 3) : 3;
+      trend.push({ day: d, label: String(d), hasVal: v > 0, valLabel: (v > 0 ? d + '일 ' + fmt(v) : d + '일'), barStyle: { width: '100%', height: h + '%', borderRadius: '4px 4px 2px 2px', background: v > 0 ? 'oklch(0.80 0.10 40)' : 'oklch(0.915 0.012 60)', transition: 'height .3s ease' } });
+    }
+
+    let maxCatSpent = 0;
+    s.cats.forEach(c => { const cs = entries.filter(e => e.category === c).reduce((a, e) => a + (Number(e.amount) || 0), 0); if (cs > maxCatSpent) maxCatSpent = cs; });
+    const cats = s.cats.map((c, i) => {
+      const col = catColorArr[i % catColorArr.length];
+      const cb = Number(cur.catBudgets[c]) || 0;
+      const cs = entries.filter(e => e.category === c).reduce((a, e) => a + (Number(e.amount) || 0), 0);
+      const crem = cb - cs;
+      const denom = cb > 0 ? cb : (maxCatSpent || 1);
+      const w = Math.min(cs / denom, 1) * 100;
+      const overC = cb > 0 && cs > cb;
+      return {
+        name: c, color: col, budget: cb, spent: cs, remaining: crem,
+        budgetLabel: cb > 0 ? fmt(cb) : '미설정', spentLabel: fmt(cs), remainingLabel: cb > 0 ? fmt(crem) : '—', hasBudget: cb > 0, over: overC,
+        remColor: crem < 0 ? 'oklch(0.58 0.17 25)' : 'oklch(0.50 0.05 155)',
+        barStyle: { width: w + '%', height: '100%', borderRadius: '999px', background: overC ? 'oklch(0.60 0.16 25)' : col, transition: 'width .35s ease' },
+        draftVal: s.catBudgetDrafts[c] !== undefined ? s.catBudgetDrafts[c] : (cb ? String(cb) : ''),
+        onDraft: (e) => this.setCatDraft(c, e.target.value),
+        onSave: () => this.saveCatBudget(c)
+      };
+    });
+
+    let maxUser = 0;
+    s.users.forEach(u => { const us = entries.filter(e => e.user === u).reduce((a, e) => a + (Number(e.amount) || 0), 0); if (us > maxUser) maxUser = us; });
+    const userStats = s.users.map((u, i) => {
+      const us = entries.filter(e => e.user === u).reduce((a, e) => a + (Number(e.amount) || 0), 0);
+      const w = maxUser > 0 ? us / maxUser * 100 : 0;
+      const dot = i === 0 ? 'oklch(0.80 0.10 40)' : 'oklch(0.72 0.09 265)';
+      return { name: u, spent: us, spentLabel: fmt(us), dot, barStyle: { width: w + '%', height: '100%', borderRadius: '999px', background: dot, transition: 'width .35s ease' } };
+    });
+
+    const catColorMap = {}; s.cats.forEach((c, i) => catColorMap[c] = catColorArr[i % catColorArr.length]);
+    const sorted = entries.slice().sort((a, b) => { if (a.date !== b.date) return a.date < b.date ? 1 : -1; return b.id > a.id ? 1 : -1; });
+    const entriesList = sorted.map(e => {
+      const dp = String(e.date || '').split('-');
+      return { id: e.id, dateLabel: dp.length === 3 ? (+dp[1]) + '/' + (+dp[2]) : e.date, amountLabel: fmt(e.amount), category: e.category, user: e.user, card: e.card, memo: e.memo || '', catColor: catColorMap[e.category] || 'oklch(0.8 0.05 60)', onDelete: () => this.deleteEntry(e.id) };
+    });
+
+    const tabBase = 'border:none;border-radius:10px;padding:7px 12px;font-size:13px;font-family:\'Poppins\';font-weight:500;flex:none;white-space:nowrap;';
+    const monthTabs = [];
+    for (let k = 0; k < 12; k++) {
+      const mi = 6 + k; const y = 2026 + Math.floor(mi / 12); const m = (mi % 12) + 1;
+      const key = y + '-' + String(m).padStart(2, '0');
+      const active = key === s.month;
+      monthTabs.push({ key, label: (y % 100) + '.' + m, active, onClick: () => this.setMonth(key), tabStyle: tabBase + (active ? 'background:oklch(0.80 0.11 40);color:oklch(0.28 0.05 40);' : 'background:oklch(0.955 0.012 65);color:oklch(0.55 0.02 60);') });
+    }
+    const headerMonthLabel = yy + '년 ' + mm + '월';
+
+    const chip = (active, accent) => 'border:none;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:600;flex:none;' + (active ? 'background:' + accent + ';color:#fff;' : 'background:oklch(0.955 0.012 65);color:oklch(0.5 0.02 60);');
+    const chipSmall = (active) => 'border:none;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:500;flex:none;font-family:\'Poppins\';' + (active ? 'background:oklch(0.44 0.04 55);color:#fff;' : 'background:oklch(0.955 0.012 65);color:oklch(0.5 0.02 60);');
+    const userChips = s.users.map((u, i) => ({ name: u, active: s.draft.user === u, onClick: () => this.setDraft('user', u), chipStyle: 'flex:1;' + chip(s.draft.user === u, i === 0 ? 'oklch(0.72 0.10 45)' : 'oklch(0.68 0.09 265)') }));
+    const catChips = s.cats.map((c, i) => ({ name: c, active: s.draft.category === c, onClick: () => this.setDraft('category', c), chipStyle: chip(s.draft.category === c, ['oklch(0.68 0.11 45)', 'oklch(0.70 0.10 95)', 'oklch(0.66 0.09 150)', 'oklch(0.64 0.09 225)', 'oklch(0.62 0.10 295)', 'oklch(0.68 0.10 355)'][i % 6]) }));
+    const cardChips = s.cards.map(c => ({ name: c, active: s.draft.card === c, onClick: () => this.setDraft('card', c), chipSmallStyle: chipSmall(s.draft.card === c) }));
+
+    const isMobile = s.viewMode === 'auto' ? s.isMobile : s.viewMode === 'mobile';
+    const vtog = (a) => 'border:none;border-radius:9px;padding:6px 11px;font-size:12px;font-weight:600;font-family:\'Gowun Dodum\',sans-serif;' + (a ? 'background:#fff;color:oklch(0.36 0.03 50);box-shadow:0 1px 4px oklch(0.5 0.03 50 / 0.12);' : 'background:transparent;color:oklch(0.55 0.02 60);');
+    const navBase = 'border:none;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:600;';
+    const navHomeStyle = navBase + (s.tab === 'home' ? 'background:#fff;color:oklch(0.36 0.03 50);box-shadow:0 1px 4px oklch(0.5 0.03 50 / 0.12);' : 'background:transparent;color:oklch(0.55 0.02 60);');
+    const navDashStyle = navBase + (s.tab === 'dashboard' ? 'background:#fff;color:oklch(0.36 0.03 50);box-shadow:0 1px 4px oklch(0.5 0.03 50 / 0.12);' : 'background:transparent;color:oklch(0.55 0.02 60);');
+
+    return {
+      monthTabs, headerMonthLabel, daysInMonth,
+      budgetLabel: fmt(budget), spentLabel: fmt(spent), remainingLabel: fmt(remaining), remainingColor, pctLabel, gaugeStyle, ratioBarStyle, over, hasBudget: budget > 0,
+      trend, cats, userStats, entriesList, isEmpty: entries.length === 0, entriesCount: entries.length,
+      showTrend: this.props.showTrend != null ? this.props.showTrend : true,
+      isMobile,
+      showHomeDesktop: s.tab === 'home' && !isMobile,
+      showHomeMobile: s.tab === 'home' && isMobile,
+      showDash: s.tab === 'dashboard',
+      onHome: () => this.setTab('home'), onDash: () => this.setTab('dashboard'),
+      navHomeStyle, navDashStyle,
+      onRefresh: () => this.pull(),
+      syncLabel: s.syncing ? '동기화 중…' : (s.syncMsg ? s.syncMsg : (s.synced ? '● 시트 연결됨' : '○ 연결 대기')),
+      syncStyle: 'border:none;border-radius:999px;padding:5px 11px;font-size:11px;font-weight:600;cursor:pointer;' + (s.syncMsg ? 'background:oklch(0.94 0.05 30);color:oklch(0.52 0.14 30);' : s.syncing ? 'background:oklch(0.95 0.03 90);color:oklch(0.5 0.08 90);' : s.synced ? 'background:oklch(0.93 0.04 155);color:oklch(0.42 0.08 155);' : 'background:oklch(0.94 0.012 65);color:oklch(0.55 0.02 60);'),
+      shellStyle: { maxWidth: s.viewMode === 'mobile' ? '440px' : '1060px', margin: '0 auto', transition: 'max-width .25s ease' },
+      onViewAuto: () => this.setViewMode('auto'), onViewDesktop: () => this.setViewMode('desktop'), onViewMobile: () => this.setViewMode('mobile'),
+      vAutoStyle: vtog(s.viewMode === 'auto'), vDeskStyle: vtog(s.viewMode === 'desktop'), vMobileStyle: vtog(s.viewMode === 'mobile'),
+      outerStyle: { minHeight: '100vh', padding: isMobile ? '16px 12px 32px' : '32px 24px 48px' },
+      appbarStyle: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap', padding: '0 2px 14px' },
+      dashTopStyle: { display: 'flex', gap: '16px', flexDirection: isMobile ? 'column' : 'row', flexWrap: 'wrap' },
+      dashGaugeCardStyle: { flex: isMobile ? '1 1 auto' : 'none', width: isMobile ? '100%' : '260px', background: 'oklch(0.985 0.006 72)', borderRadius: '20px', padding: '20px', display: 'flex', alignItems: 'center', gap: '18px' },
+      dashCatGridStyle: { display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px', marginBottom: '18px' },
+      dashBottomStyle: { display: 'flex', gap: '16px', flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start' },
+      dashAddStyle: { flex: 'none', width: isMobile ? '100%' : '300px', border: '1px solid oklch(0.93 0.012 65)', borderRadius: '16px', padding: '16px' },
+      draftAmount: s.draft.amount, draftDate: s.draft.date, draftCategory: s.draft.category, draftUser: s.draft.user, draftCard: s.draft.card, draftMemo: s.draft.memo,
+      onAmount: (e) => this.setDraft('amount', e.target.value),
+      onAmountKey: (e) => { if (e.key === 'Enter') this.addEntry(); },
+      onDate: (e) => this.setDraft('date', e.target.value),
+      onCategory: (e) => this.setDraft('category', e.target.value),
+      onUser: (e) => this.setDraft('user', e.target.value),
+      onCard: (e) => this.setDraft('card', e.target.value),
+      onMemo: (e) => this.setDraft('memo', e.target.value),
+      addEntry: () => this.addEntry(),
+      userOpts: s.users, cardOpts: s.cards, catOpts: s.cats,
+      budgetDraft: s.budgetDraft, onBudget: (e) => this.setBudgetDraft(e.target.value), saveBudget: () => this.saveBudget(),
+      userChips, catChips, cardChips
+    };
+  }
+}
+</script>
+</body>
+</html>
