@@ -104,6 +104,12 @@ function toDateStr(v) {
   return String(v);
 }
 
+// _meta의 month 셀이 날짜로 자동변환됐어도 'YYYY-MM' 문자열로 되돌림
+function toMonthKey(v) {
+  if (v instanceof Date) return Utilities.formatDate(v, ss().getSpreadsheetTimeZone(), 'yyyy-MM');
+  return String(v);
+}
+
 /* ---------- 읽기 ---------- */
 
 function readAll() {
@@ -112,12 +118,14 @@ function readAll() {
   // _meta (예산 정보)
   var mv = metaSheet().getDataRange().getValues();
   for (var i = 1; i < mv.length; i++) {
-    var mo = String(mv[i][0]); if (!mo) continue;
+    var mo = toMonthKey(mv[i][0]); if (!mo) continue;
     if (!/^\d{4}-\d{2}$/.test(mo)) continue; // __lists__ 등 특수 행은 건너뜀
     months[mo] = months[mo] || { budget: 0, catBudgets: {}, entries: [] };
-    months[mo].budget = Number(mv[i][1]) || 0;
-    try { months[mo].catBudgets = mv[i][2] ? JSON.parse(mv[i][2]) : {}; }
-    catch (e) { months[mo].catBudgets = {}; }
+    // 중복 행이 남아있어도 0이 아닌 예산/비어있지 않은 항목예산이 이기도록 병합
+    var b = Number(mv[i][1]) || 0;
+    if (b) months[mo].budget = b;
+    try { var cb = mv[i][2] ? JSON.parse(mv[i][2]) : {}; if (cb && Object.keys(cb).length) months[mo].catBudgets = cb; }
+    catch (e) {}
   }
 
   // 달별 지출 시트 (YYYY-MM 이름만)
@@ -199,13 +207,27 @@ function setCatBudget(month, catBudgets) {
 function upsertMeta(month, mutate) {
   var sh = metaSheet();
   var vals = sh.getDataRange().getValues();
+  var firstIdx = -1;
+  var merged = null;
+  // 이 달에 해당하는 모든 행을 찾아 병합(0이 아닌 예산/비어있지 않은 항목예산이 이김)
   for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]) === month) {
-      var row = vals[i];
-      mutate(row);
-      sh.getRange(i + 1, 1, 1, 3).setValues([[row[0], row[1], row[2]]]);
-      return;
+    if (toMonthKey(vals[i][0]) === month) {
+      if (firstIdx < 0) { firstIdx = i; merged = [month, vals[i][1], vals[i][2]]; }
+      else {
+        if (Number(vals[i][1]) || 0) merged[1] = vals[i][1];
+        if (vals[i][2] && vals[i][2] !== '{}') merged[2] = vals[i][2];
+      }
     }
+  }
+  if (firstIdx >= 0) {
+    mutate(merged);
+    // 정규화된 month 문자열로 다시 써서 날짜로 변환된 기존 행 복구
+    sh.getRange(firstIdx + 1, 1, 1, 3).setValues([[month, merged[1], merged[2]]]);
+    // 중복 행 제거(아래에서 위로)
+    for (var j = vals.length - 1; j > firstIdx; j--) {
+      if (toMonthKey(vals[j][0]) === month) sh.deleteRow(j + 1);
+    }
+    return;
   }
   var nr = [month, 0, '{}'];
   mutate(nr);
