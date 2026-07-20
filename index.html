@@ -175,9 +175,17 @@
         </div>
         <div style="flex:1;min-width:0;background:oklch(0.985 0.006 72);border-radius:16px;padding:16px;">
           <div style="font-size:12px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:10px;">카드</div>
-          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"><sc-for list="{{ cardManage }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid oklch(0.93 0.012 65);border-radius:10px;padding:7px 10px;"><span style="flex:1;min-width:0;font-size:13px;font-family:'Poppins';">{{ c.name }}</span><button onClick="{{ c.onRemove }}" title="삭제" style="border:none;background:transparent;color:oklch(0.72 0.05 30);font-size:16px;line-height:1;flex:none;">×</button></div></sc-for></div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"><sc-for list="{{ cardManage }}" as="c" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid oklch(0.93 0.012 65);border-radius:10px;padding:7px 10px;"><span style="flex:1;min-width:0;font-size:13px;font-family:'Poppins';">{{ c.name }}</span><sc-if value="{{ c.notCash }}" hint-placeholder-val="{{ true }}"><select value="{{ c.owner }}" onChange="{{ c.onOwner }}" title="정산 소유자" style="flex:none;border:1px solid oklch(0.90 0.015 65);border-radius:8px;background:#fff;padding:5px 6px;font-size:11px;outline:none;"><sc-for list="{{ c.ownerOpts }}" as="o" hint-placeholder-count="2"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if><sc-if value="{{ c.isCash }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:oklch(0.6 0.02 60);flex:none;">사용자별</span></sc-if><button onClick="{{ c.onRemove }}" title="삭제" style="border:none;background:transparent;color:oklch(0.72 0.05 30);font-size:16px;line-height:1;flex:none;">×</button></div></sc-for></div>
           <div style="display:flex;gap:5px;"><input value="{{ newCard }}" onInput="{{ onNewCard }}" onKeyDown="{{ onNewCardKey }}" placeholder="새 카드" style="flex:1;min-width:0;border:1px solid oklch(0.90 0.015 65);border-radius:10px;background:#fff;padding:8px 10px;font-size:12px;outline:none;"><button onClick="{{ addCard }}" style="border:none;border-radius:10px;background:oklch(0.90 0.04 150);color:oklch(0.36 0.06 155);font-weight:600;padding:8px 12px;font-size:12px;flex:none;">추가</button></div>
         </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin:0 0 10px;">이번 달 정산 <span style="font-weight:400;color:oklch(0.6 0.02 60);font-size:12px;">— 카드 소유자·현금 사용자 기준 부담액</span></div>
+      <div style="background:oklch(0.985 0.006 72);border-radius:16px;padding:16px;margin-bottom:18px;">
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:12px;"><sc-for list="{{ settleUsers }}" as="u" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="width:8px;height:8px;border-radius:50%;background:{{ u.dot }};flex:none;"></span><span style="flex:1;min-width:60px;font-size:13px;font-weight:600;">{{ u.name }}</span><span style="font-size:11px;color:oklch(0.6 0.02 60);font-family:'Poppins';">카드 {{ u.cardLabel }} · 현금 {{ u.cashLabel }}</span><span style="font-family:'Poppins';font-size:15px;font-weight:700;width:96px;text-align:right;flex:none;">{{ u.totalLabel }}</span></div></sc-for></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:11px;border-top:1px dashed oklch(0.9 0.01 65);margin-bottom:12px;"><span style="font-size:12px;color:oklch(0.56 0.02 60);">총 생활비</span><span style="font-family:'Poppins';font-size:16px;font-weight:700;">{{ settleTotalLabel }}</span></div>
+        <div style="background:oklch(0.965 0.02 55);border-radius:12px;padding:14px;text-align:center;"><div style="font-size:11px;color:oklch(0.55 0.02 60);margin-bottom:4px;">정산 (반반 부담 기준)</div><div style="font-family:'Poppins';font-size:17px;font-weight:700;color:oklch(0.44 0.07 155);">{{ settleText }}</div></div>
+        <sc-if value="{{ hasUnassigned }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:oklch(0.55 0.14 40);margin-top:10px;line-height:1.5;">⚠️ 소유자 미지정 카드 지출 {{ settleUnassignedLabel }} 은 정산에서 제외됐어요. 위 카드 관리에서 소유자를 지정하세요.</div></sc-if>
       </div>
 
       <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
@@ -217,6 +225,7 @@ class Component extends DCLogic {
     const users = (lists && lists.users && lists.users.length) ? lists.users : ['이우승', '송혜림'];
     const cats = (lists && lists.cats && lists.cats.length) ? lists.cats : ['그로서리', '외식', '생활용품', '통신', '전기비', '기타'];
     const cards = (lists && lists.cards && lists.cards.length) ? lists.cards : ['CSP(WS)', 'Bonvoy', 'C.Freedom'];
+    const cardOwners = (lists && lists.cardOwners) ? lists.cardOwners : {}; // 카드→소유자(정산 주체). 현금은 실사용자라 미포함
     let data = {};
     try { const raw = localStorage.getItem('fam-budget-v1'); if (raw) data = JSON.parse(raw) || {}; } catch (e) {}
     // 오늘 날짜(미 동부시간 기준) → 'YYYY-MM-DD'
@@ -228,7 +237,7 @@ class Component extends DCLogic {
     let sheetUrl = DEFAULT_URL;
     try { const u = localStorage.getItem('fam-budget-url'); if (u) sheetUrl = u; } catch (e) {}
     return {
-      month, data, users, cats, cards, isMobile, tab: 'home', viewMode: 'auto',
+      month, data, users, cats, cards, cardOwners, isMobile, tab: 'home', viewMode: 'auto',
       sheetUrl, syncing: false, synced: false, syncMsg: null,
       budgetDraft: String(data[month].budget || ''),
       catBudgetDrafts: {},
@@ -291,22 +300,23 @@ class Component extends DCLogic {
     const users = (config.users && config.users.length) ? config.users : cur.users;
     const cats = (config.cats && config.cats.length) ? config.cats : cur.cats;
     const cards = (config.cards && config.cards.length) ? config.cards : cur.cards;
-    patch.users = users; patch.cats = cats; patch.cards = cards;
-    this.saveLists(users, cats, cards);
+    const cardOwners = config.cardOwners ? config.cardOwners : (cur.cardOwners || {});
+    patch.users = users; patch.cats = cats; patch.cards = cards; patch.cardOwners = cardOwners;
+    this.saveLists(users, cats, cards, cardOwners);
     const d = { ...cur.draft };
     if (cats.indexOf(d.category) < 0) d.category = cats[0];
     if (users.indexOf(d.user) < 0) d.user = users[0];
     if (cards.indexOf(d.card) < 0) d.card = cards[0];
     patch.draft = d;
   }
-  saveLists(users, cats, cards) {
-    try { localStorage.setItem('fam-budget-lists-v1', JSON.stringify({ users, cats, cards })); } catch (e) {}
+  saveLists(users, cats, cards, cardOwners) {
+    try { localStorage.setItem('fam-budget-lists-v1', JSON.stringify({ users, cats, cards, cardOwners: cardOwners || {} })); } catch (e) {}
   }
   // 목록 변경을 로컬 저장 + 시트에 조용히 동기화(실패해도 에러 배지 안 띄움 — 로컬은 이미 반영)
-  persistLists(users, cats, cards) {
-    this.saveLists(users, cats, cards);
+  persistLists(users, cats, cards, cardOwners) {
+    this.saveLists(users, cats, cards, cardOwners);
     if (!this.state.sheetUrl) return;
-    this.apiPost({ action: 'setLists', lists: { users, cats, cards } }).catch(() => {});
+    this.apiPost({ action: 'setLists', lists: { users, cats, cards, cardOwners: cardOwners || {} } }).catch(() => {});
   }
 
   setNewCat(v) { this.setState({ newCat: v }); }
@@ -315,7 +325,7 @@ class Component extends DCLogic {
     const name = (prev.newCat || '').trim();
     if (!name || prev.cats.indexOf(name) >= 0) { this.setState({ newCat: '' }); return; }
     const cats = [...prev.cats, name];
-    this.persistLists(prev.users, cats, prev.cards);
+    this.persistLists(prev.users, cats, prev.cards, prev.cardOwners);
     this.setState({ cats, newCat: '' });
   }
   removeCat(name) {
@@ -323,7 +333,7 @@ class Component extends DCLogic {
     if (prev.cats.length <= 1) return;
     const cats = prev.cats.filter(c => c !== name);
     const draft = prev.draft.category === name ? { ...prev.draft, category: cats[0] } : prev.draft;
-    this.persistLists(prev.users, cats, prev.cards);
+    this.persistLists(prev.users, cats, prev.cards, prev.cardOwners);
     this.setState({ cats, draft });
   }
   setNewUser(v) { this.setState({ newUser: v }); }
@@ -332,7 +342,7 @@ class Component extends DCLogic {
     const name = (prev.newUser || '').trim();
     if (!name || prev.users.indexOf(name) >= 0) { this.setState({ newUser: '' }); return; }
     const users = [...prev.users, name];
-    this.persistLists(users, prev.cats, prev.cards);
+    this.persistLists(users, prev.cats, prev.cards, prev.cardOwners);
     this.setState({ users, newUser: '' });
   }
   removeUser(name) {
@@ -340,8 +350,11 @@ class Component extends DCLogic {
     if (prev.users.length <= 1) return;
     const users = prev.users.filter(u => u !== name);
     const draft = prev.draft.user === name ? { ...prev.draft, user: users[0] } : prev.draft;
-    this.persistLists(users, prev.cats, prev.cards);
-    this.setState({ users, draft });
+    // 삭제된 사용자가 소유한 카드는 남은 첫 사용자에게 재배정
+    const cardOwners = { ...prev.cardOwners };
+    Object.keys(cardOwners).forEach(c => { if (cardOwners[c] === name) cardOwners[c] = users[0]; });
+    this.persistLists(users, prev.cats, prev.cards, cardOwners);
+    this.setState({ users, draft, cardOwners });
   }
   setNewCard(v) { this.setState({ newCard: v }); }
   addCard() {
@@ -349,16 +362,26 @@ class Component extends DCLogic {
     const name = (prev.newCard || '').trim();
     if (!name || prev.cards.indexOf(name) >= 0) { this.setState({ newCard: '' }); return; }
     const cards = [...prev.cards, name];
-    this.persistLists(prev.users, prev.cats, cards);
-    this.setState({ cards, newCard: '' });
+    // 새 카드 기본 소유자 = 첫 사용자 (현금은 실사용자라 소유자 미지정)
+    const cardOwners = name === '현금' ? prev.cardOwners : { ...prev.cardOwners, [name]: prev.users[0] };
+    this.persistLists(prev.users, prev.cats, cards, cardOwners);
+    this.setState({ cards, cardOwners, newCard: '' });
   }
   removeCard(name) {
     const prev = this.state;
     if (prev.cards.length <= 1) return;
     const cards = prev.cards.filter(c => c !== name);
     const draft = prev.draft.card === name ? { ...prev.draft, card: cards[0] } : prev.draft;
-    this.persistLists(prev.users, prev.cats, cards);
-    this.setState({ cards, draft });
+    const cardOwners = { ...prev.cardOwners }; delete cardOwners[name];
+    this.persistLists(prev.users, prev.cats, cards, cardOwners);
+    this.setState({ cards, draft, cardOwners });
+  }
+  // 카드 소유자(정산 주체) 지정
+  setCardOwner(card, user) {
+    const prev = this.state;
+    const cardOwners = { ...prev.cardOwners, [card]: user };
+    this.persistLists(prev.users, prev.cats, prev.cards, cardOwners);
+    this.setState({ cardOwners });
   }
   fmt(n) { const sym = this.props.currencySymbol != null ? this.props.currencySymbol : '$'; const x = Number(n) || 0; return (x < 0 ? '-' : '') + sym + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
 
@@ -513,7 +536,42 @@ class Component extends DCLogic {
     const navHomeStyle = navBase + (s.tab === 'home' ? 'background:#fff;color:oklch(0.36 0.03 50);box-shadow:0 1px 4px oklch(0.5 0.03 50 / 0.12);' : 'background:transparent;color:oklch(0.55 0.02 60);');
     const navDashStyle = navBase + (s.tab === 'dashboard' ? 'background:#fff;color:oklch(0.36 0.03 50);box-shadow:0 1px 4px oklch(0.5 0.03 50 / 0.12);' : 'background:transparent;color:oklch(0.55 0.02 60);');
 
+    // ── 정산: 각 지출의 정산주체 = 카드면 소유자, 현금이면 실사용자 ──
+    const CASH = '현금';
+    const cardOwners = s.cardOwners || {};
+    const cardBurden = {}, cashBurden = {}, burden = {};
+    s.users.forEach(u => { cardBurden[u] = 0; cashBurden[u] = 0; burden[u] = 0; });
+    let unassigned = 0;
+    entries.forEach(e => {
+      const amt = Number(e.amount) || 0;
+      if (e.card === CASH) {
+        if (cashBurden[e.user] !== undefined) { cashBurden[e.user] += amt; burden[e.user] += amt; }
+        else unassigned += amt;
+      } else {
+        const o = cardOwners[e.card];
+        if (o && cardBurden[o] !== undefined) { cardBurden[o] += amt; burden[o] += amt; }
+        else unassigned += amt; // 소유자 미지정 카드
+      }
+    });
+    const settleUsers = s.users.map((u, i) => ({
+      name: u, dot: i === 0 ? 'oklch(0.80 0.10 40)' : 'oklch(0.72 0.09 265)',
+      totalLabel: fmt(burden[u]), cardLabel: fmt(cardBurden[u]), cashLabel: fmt(cashBurden[u])
+    }));
+    const settleTotal = s.users.reduce((a, u) => a + burden[u], 0) + unassigned;
+    let settleText = '—';
+    if (s.users.length === 2) {
+      const a = s.users[0], b = s.users[1];
+      const diff = burden[a] - burden[b];
+      const half = Math.abs(diff) / 2;
+      if (Math.abs(diff) < 0.005) settleText = '정산 불필요 (부담액 동일)';
+      else if (diff > 0) settleText = b + ' → ' + a + '  ' + fmt(half);
+      else settleText = a + ' → ' + b + '  ' + fmt(half);
+    } else {
+      settleText = '2명일 때만 자동 정산 표시';
+    }
+
     return {
+      settleUsers, settleText, settleTotalLabel: fmt(settleTotal), settleUnassignedLabel: fmt(unassigned), hasUnassigned: unassigned > 0.005,
       monthTabs, headerMonthLabel, daysInMonth,
       budgetLabel: fmt(budget), spentLabel: fmt(spent), remainingLabel: fmt(remaining), remainingColor, pctLabel, gaugeStyle, ratioBarStyle, over, hasBudget: budget > 0,
       trend, cats, userStats, entriesList, isEmpty: entries.length === 0, entriesCount: entries.length,
@@ -554,7 +612,7 @@ class Component extends DCLogic {
       newUser: s.newUser, onNewUser: (e) => this.setNewUser(e.target.value), onNewUserKey: (e) => { if (e.key === 'Enter') this.addUser(); }, addUser: () => this.addUser(),
       newCard: s.newCard, onNewCard: (e) => this.setNewCard(e.target.value), onNewCardKey: (e) => { if (e.key === 'Enter') this.addCard(); }, addCard: () => this.addCard(),
       userManage: s.users.map((u, i) => ({ name: u, dot: i === 0 ? 'oklch(0.80 0.10 40)' : 'oklch(0.72 0.09 265)', onRemove: () => this.removeUser(u) })),
-      cardManage: s.cards.map(c => ({ name: c, onRemove: () => this.removeCard(c) })),
+      cardManage: s.cards.map(c => { const isCash = c === '현금'; return { name: c, isCash, notCash: !isCash, owner: isCash ? '' : (s.cardOwners[c] || s.users[0]), ownerOpts: s.users, onOwner: (e) => this.setCardOwner(c, e.target.value), onRemove: () => this.removeCard(c) }; }),
       dashManageStyle: { display: 'flex', gap: '12px', flexDirection: isMobile ? 'column' : 'row', marginBottom: '18px' }
     };
   }
