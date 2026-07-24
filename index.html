@@ -83,7 +83,7 @@
         <div style="display:flex;align-items:center;gap:26px;">
           <div style="position:relative;width:168px;height:168px;flex:none;">
             <div style="{{ gaugeStyle }}"></div>
-            <div style="position:absolute;inset:19px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;"><span style="font-size:11px;color:oklch(0.56 0.02 60);">남은 금액</span><span style="font-family:'Poppins';font-size:28px;font-weight:700;color:{{ remainingColor }};">{{ remainingLabel }}</span><span style="font-size:11px;color:oklch(0.56 0.02 60);font-family:'Poppins';">{{ pctLabel }} 사용</span></div>
+            <div style="position:absolute;inset:19px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;"><span style="font-size:11px;color:oklch(0.56 0.02 60);">남은 금액</span><span style="{{ remNumStyle }}">{{ remainingLabel }}</span><span style="font-size:11px;color:oklch(0.56 0.02 60);font-family:'Poppins';">{{ pctLabel }} 사용</span></div>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
             <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:11px;border-bottom:1px dashed oklch(0.9 0.01 65);"><span style="font-size:13px;color:oklch(0.56 0.02 60);">이번 달 예산</span><span style="font-family:'Poppins';font-size:19px;font-weight:600;">{{ budgetLabel }}</span></div>
@@ -140,7 +140,7 @@
     <div style="background:oklch(0.995 0.004 75);border-radius:24px;box-shadow:0 20px 60px -34px oklch(0.5 0.05 50 / 0.4);border:1px solid oklch(0.93 0.01 65);padding:22px;">
       <div style="{{ dashTopStyle }}">
         <div style="{{ dashGaugeCardStyle }}">
-          <div style="position:relative;width:120px;height:120px;flex:none;"><div style="{{ gaugeStyle }}"></div><div style="position:absolute;inset:15px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span style="font-size:10px;color:oklch(0.56 0.02 60);">남음</span><span style="font-family:'Poppins';font-size:18px;font-weight:700;color:{{ remainingColor }};line-height:1.1;">{{ remainingLabel }}</span><span style="font-size:10px;color:oklch(0.56 0.02 60);font-family:'Poppins';">{{ pctLabel }}</span></div></div>
+          <div style="position:relative;width:120px;height:120px;flex:none;"><div style="{{ gaugeStyle }}"></div><div style="position:absolute;inset:15px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span style="font-size:10px;color:oklch(0.56 0.02 60);">남음</span><span style="{{ remNumStyleDash }}">{{ remainingLabel }}</span><span style="font-size:10px;color:oklch(0.56 0.02 60);font-family:'Poppins';">{{ pctLabel }}</span></div></div>
           <div style="flex:1;min-width:0;"><div style="font-size:11px;color:oklch(0.56 0.02 60);">이번 달 예산</div><div style="font-family:'Poppins';font-size:18px;font-weight:600;margin-bottom:8px;">{{ budgetLabel }}</div><div style="font-size:11px;color:oklch(0.56 0.02 60);">지출</div><div style="font-family:'Poppins';font-size:18px;font-weight:600;color:oklch(0.6 0.11 40);">{{ spentLabel }}</div></div>
         </div>
         <div style="flex:1;min-width:220px;background:oklch(0.985 0.006 72);border-radius:20px;padding:20px;">
@@ -461,6 +461,12 @@ class Component extends DCLogic {
     const ratioBarStyle = { width: ratioPct + '%', height: '100%', borderRadius: '999px', background: arc, transition: 'width .35s ease' };
     const remainingColor = remaining < 0 ? 'oklch(0.58 0.17 25)' : 'oklch(0.44 0.07 155)';
     const pctLabel = budget > 0 ? Math.round(ratio * 100) + '%' : '—';
+    // 게이지 중앙 남은 금액: 글자 수가 많으면(예: -$1,131.85) 원 밖으로 넘치거나 줄바꿈되므로 폰트 자동 축소 + nowrap
+    const remLen = fmt(remaining).length;
+    const remFsHome = Math.max(14, Math.min(28, Math.floor(120 / (0.6 * remLen))));
+    const remFsDash = Math.max(11, Math.min(18, Math.floor(84 / (0.6 * remLen))));
+    const remNumStyle = { fontFamily: "'Poppins'", fontWeight: 700, color: remainingColor, whiteSpace: 'nowrap', fontSize: remFsHome + 'px' };
+    const remNumStyleDash = { fontFamily: "'Poppins'", fontWeight: 700, color: remainingColor, whiteSpace: 'nowrap', lineHeight: '1.1', fontSize: remFsDash + 'px' };
 
     const catColorArr = ['oklch(0.80 0.10 40)', 'oklch(0.82 0.09 95)', 'oklch(0.79 0.08 150)', 'oklch(0.78 0.08 225)', 'oklch(0.76 0.09 295)', 'oklch(0.80 0.09 355)'];
 
@@ -574,6 +580,7 @@ class Component extends DCLogic {
       settleUsers, settleText, settleTotalLabel: fmt(settleTotal), settleUnassignedLabel: fmt(unassigned), hasUnassigned: unassigned > 0.005,
       monthTabs, headerMonthLabel, daysInMonth,
       budgetLabel: fmt(budget), spentLabel: fmt(spent), remainingLabel: fmt(remaining), remainingColor, pctLabel, gaugeStyle, ratioBarStyle, over, hasBudget: budget > 0,
+      remNumStyle, remNumStyleDash,
       trend, cats, userStats, entriesList, isEmpty: entries.length === 0, entriesCount: entries.length,
       showTrend: this.props.showTrend != null ? this.props.showTrend : true,
       isMobile,
