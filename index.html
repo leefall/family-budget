@@ -94,7 +94,7 @@
         <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);">일자별 지출 추이</span><span style="font-size:11px;color:oklch(0.6 0.02 60);font-family:'Poppins';">1 → {{ daysInMonth }}일</span></div>
-          <div style="display:flex;align-items:flex-end;gap:2px;height:76px;background:oklch(0.985 0.006 72);border-radius:12px;padding:8px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"></div></div></sc-for></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px 10px;margin-bottom:8px;"><sc-for list="{{ catLegend }}" as="l" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:oklch(0.5 0.02 60);"><span style="{{ l.dotStyle }}"></span>{{ l.name }}</span></sc-for></div><div style="display:flex;align-items:flex-end;gap:2px;height:76px;background:oklch(0.985 0.006 72);border-radius:12px;padding:8px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"><sc-for list="{{ t.segments }}" as="s" hint-placeholder-count="3"><div style="{{ s.style }}"></div></sc-for></div></div></sc-for></div>
         </div>
         </sc-if>
         <div>
@@ -123,7 +123,7 @@
         <button onClick="{{ addEntry }}" style="width:100%;border:none;border-radius:14px;background:oklch(0.80 0.11 40);color:oklch(0.28 0.05 40);font-weight:600;padding:14px;font-size:15px;">+ 추가</button>
       </div>
       <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
-      <div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:8px;">일자별 추이</div><div style="display:flex;align-items:flex-end;gap:2px;height:60px;background:oklch(0.985 0.006 72);border-radius:12px;padding:8px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"></div></div></sc-for></div></div>
+      <div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:8px;">일자별 추이</div><div style="display:flex;flex-wrap:wrap;gap:8px 10px;margin-bottom:8px;"><sc-for list="{{ catLegend }}" as="l" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:oklch(0.5 0.02 60);"><span style="{{ l.dotStyle }}"></span>{{ l.name }}</span></sc-for></div><div style="display:flex;align-items:flex-end;gap:2px;height:60px;background:oklch(0.985 0.006 72);border-radius:12px;padding:8px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"><sc-for list="{{ t.segments }}" as="s" hint-placeholder-count="3"><div style="{{ s.style }}"></div></sc-for></div></div></sc-for></div></div>
       </sc-if>
       <div style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);margin-bottom:10px;">내역</div>
       <div style="display:flex;flex-direction:column;gap:6px;">
@@ -189,7 +189,7 @@
       </div>
 
       <sc-if value="{{ showTrend }}" hint-placeholder-val="{{ true }}">
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);">일자별 지출 추이</span><span style="font-size:11px;color:oklch(0.6 0.02 60);font-family:'Poppins';">1 → {{ daysInMonth }}일</span></div><div style="display:flex;align-items:flex-end;gap:3px;height:88px;background:oklch(0.985 0.006 72);border-radius:14px;padding:10px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"></div></div></sc-for></div></div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;"><span style="font-size:13px;font-weight:600;color:oklch(0.46 0.03 55);">일자별 지출 추이</span><span style="font-size:11px;color:oklch(0.6 0.02 60);font-family:'Poppins';">1 → {{ daysInMonth }}일</span></div><div style="display:flex;flex-wrap:wrap;gap:8px 10px;margin-bottom:8px;"><sc-for list="{{ catLegend }}" as="l" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:oklch(0.5 0.02 60);"><span style="{{ l.dotStyle }}"></span>{{ l.name }}</span></sc-for></div><div style="display:flex;align-items:flex-end;gap:3px;height:88px;background:oklch(0.985 0.006 72);border-radius:14px;padding:10px;"><sc-for list="{{ trend }}" as="t" hint-placeholder-count="30"><div title="{{ t.valLabel }}" style="flex:1;height:100%;display:flex;align-items:flex-end;"><div style="{{ t.barStyle }}"><sc-for list="{{ t.segments }}" as="s" hint-placeholder-count="3"><div style="{{ s.style }}"></div></sc-for></div></div></sc-for></div></div>
       </sc-if>
 
       <div style="{{ dashBottomStyle }}">
@@ -468,18 +468,37 @@ class Component extends DCLogic {
     const remNumStyle = { fontFamily: "'Poppins'", fontWeight: 700, color: remainingColor, whiteSpace: 'nowrap', fontSize: remFsHome + 'px' };
     const remNumStyleDash = { fontFamily: "'Poppins'", fontWeight: 700, color: remainingColor, whiteSpace: 'nowrap', lineHeight: '1.1', fontSize: remFsDash + 'px' };
 
-    const catColorArr = ['oklch(0.80 0.10 40)', 'oklch(0.82 0.09 95)', 'oklch(0.79 0.08 150)', 'oklch(0.78 0.08 225)', 'oklch(0.76 0.09 295)', 'oklch(0.80 0.09 355)'];
+    const catColorArr = ['oklch(0.80 0.10 40)', 'oklch(0.82 0.09 95)', 'oklch(0.79 0.08 150)', 'oklch(0.78 0.08 225)', 'oklch(0.76 0.09 295)', 'oklch(0.80 0.09 355)', 'oklch(0.83 0.10 70)', 'oklch(0.77 0.08 190)', 'oklch(0.74 0.10 265)', 'oklch(0.80 0.09 325)'];
 
     const parts = s.month.split('-'); const yy = +parts[0], mm = +parts[1];
     const daysInMonth = new Date(yy, mm, 0).getDate();
-    const dayMap = {};
-    entries.forEach(e => { const dd = +String(e.date || '').split('-')[2] || 0; if (dd) dayMap[dd] = (dayMap[dd] || 0) + (Number(e.amount) || 0); });
+    const dayMap = {};   // 일별 총액
+    const dayCat = {};   // 일별·항목별 총액 (stacked bar용)
+    entries.forEach(e => {
+      const dd = +String(e.date || '').split('-')[2] || 0; if (!dd) return;
+      const amt = Number(e.amount) || 0;
+      dayMap[dd] = (dayMap[dd] || 0) + amt;
+      (dayCat[dd] = dayCat[dd] || {})[e.category] = (dayCat[dd][e.category] || 0) + amt;
+    });
     let maxDay = 0; for (let d = 1; d <= daysInMonth; d++) { if ((dayMap[d] || 0) > maxDay) maxDay = dayMap[d]; }
+    const catColorOf = (c) => { const i = s.cats.indexOf(c); return i >= 0 ? catColorArr[i % catColorArr.length] : 'oklch(0.80 0.03 60)'; };
     const trend = [];
     for (let d = 1; d <= daysInMonth; d++) {
       const v = dayMap[d] || 0;
       const h = maxDay > 0 ? (v > 0 ? Math.max(8, Math.round(v / maxDay * 100)) : 3) : 3;
-      trend.push({ day: d, label: String(d), hasVal: v > 0, valLabel: (v > 0 ? d + '일 ' + fmt(v) : d + '일'), barStyle: { width: '100%', height: h + '%', borderRadius: '4px 4px 2px 2px', background: v > 0 ? 'oklch(0.80 0.10 40)' : 'oklch(0.915 0.012 60)', transition: 'height .3s ease' } });
+      // 항목별 스택 세그먼트 — 그 날 총액 대비 비율로 막대를 채움
+      const segs = [];
+      if (v > 0) {
+        const cm = dayCat[d] || {};
+        s.cats.forEach(c => { const cv = cm[c] || 0; if (cv > 0) segs.push({ style: { width: '100%', height: (cv / v * 100) + '%', background: catColorOf(c) }, segLabel: c + ' ' + fmt(cv) }); });
+        Object.keys(cm).forEach(c => { if (s.cats.indexOf(c) < 0 && cm[c] > 0) segs.push({ style: { width: '100%', height: (cm[c] / v * 100) + '%', background: 'oklch(0.80 0.03 60)' }, segLabel: c + ' ' + fmt(cm[c]) }); });
+      }
+      const valLabel = v > 0 ? (d + '일 ' + fmt(v) + ' · ' + segs.map(x => x.segLabel).join(', ')) : (d + '일');
+      trend.push({
+        day: d, label: String(d), hasVal: v > 0, valLabel,
+        barStyle: { width: '100%', height: h + '%', borderRadius: '4px 4px 2px 2px', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: v > 0 ? 'transparent' : 'oklch(0.915 0.012 60)', transition: 'height .3s ease' },
+        segments: segs
+      });
     }
 
     let maxCatSpent = 0;
@@ -581,6 +600,7 @@ class Component extends DCLogic {
       monthTabs, headerMonthLabel, daysInMonth,
       budgetLabel: fmt(budget), spentLabel: fmt(spent), remainingLabel: fmt(remaining), remainingColor, pctLabel, gaugeStyle, ratioBarStyle, over, hasBudget: budget > 0,
       remNumStyle, remNumStyleDash,
+      catLegend: s.cats.map((c, i) => ({ name: c, dotStyle: { width: '9px', height: '9px', borderRadius: '3px', background: catColorArr[i % catColorArr.length], flex: 'none' } })),
       trend, cats, userStats, entriesList, isEmpty: entries.length === 0, entriesCount: entries.length,
       showTrend: this.props.showTrend != null ? this.props.showTrend : true,
       isMobile,
